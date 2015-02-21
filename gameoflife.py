@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import curses
-import logging
 import random
 import sys
 import threading
 import time
-
-
-log = logging.getLogger(__name__)
 
 
 class CircularList(list):

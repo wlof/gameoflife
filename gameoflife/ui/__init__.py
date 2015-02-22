@@ -61,7 +61,7 @@ def main():
                             epilog='Suggestions and bug reports are greatly appreciated: '
                                    'https://github.com/wlof/gameoflife/issues', add_help=False)
     parser.add_argument('--numpy', '-n', action='store_true',
-                        help='use the Numpy implementation')
+                        help='use the NumPy implementation')
     parser.add_argument('--width', '-w', type=int, default=100,
                         help='grid width')
     parser.add_argument('--height', '-h', type=int, default=100,
@@ -78,12 +78,12 @@ def main():
         try:
             imp.find_module('numpy')
         except ImportError:
-            parser.error('numpy import failed. Check if numpy is installed correctly.')
+            parser.error("can't find numpy module. Check if NumPy is installed correctly.")
 
         try:
             imp.find_module('scipy')
         except ImportError:
-            parser.error('scipy import failed. Check if scipy is installed correctly.')
+            parser.error("can't find scipy module. Check if SciPy is installed correctly.")
 
     # Parse dimensions
     if args.width <= 0:

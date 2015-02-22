@@ -26,10 +26,47 @@ import time
 from gameoflife.ui.views import GameView, CellsView
 
 
+"""A few keycodes not defined in curses."""
+KEY_ESC = 27
+KEY_NUMPAD_PLUS = 465
+KEY_NUMPAD_MINUS = 464
+
+
+class handler_for(object):
+    """Decorator class for key handlers."""
+
+    handlers = []  # list of pairs (list of keycodes, handler function)
+
+    def __init__(self, *args):
+        self.keycodes = [self.make_keycode(arg) for arg in args]
+
+    def __call__(self, func):
+        self.handlers.append((self.keycodes, func))
+
+        def wrapped_func(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapped_func
+
+    @staticmethod
+    def make_keycode(key):
+        if isinstance(key, int):
+            # already a keycode, do nothing
+            return key
+        elif isinstance(key, str) or isinstance(key, unicode):
+            # character: return keycode
+            if len(key) > 1:
+                raise TypeError('make_keycode() expected a character, but '
+                                'string of length {} found'.format(len(key)))
+            return ord(key)
+        else:
+            raise TypeError('make_keycode() expected a string or int, but '
+                            '{} found'.format(type(key)))
+
+
 class GameApp(object):
     """Main game application.
 
-    Manages the view and handles user input.
+    Manages the views, handles user input, passes time.
     """
 
     MIN_SPEED = 0.1   # minimum game speed factor
@@ -53,6 +90,7 @@ class GameApp(object):
 
         self.init_views()
 
+    @handler_for(curses.KEY_RESIZE)
     def init_views(self):
         """Initializes the game and cells views."""
 
@@ -72,7 +110,7 @@ class GameApp(object):
 
     def main(self):
         """Event loop."""
-        
+
         # Clear the screen
         self.screen.refresh()
 
@@ -88,9 +126,11 @@ class GameApp(object):
 
         while not self.quit:
             # Get key press, and pass it to handler.
-            char = self.screen.getch()
-            if char != -1:
-                self.handle_keypress(char)
+            keycode = self.screen.getch()
+            if keycode != -1:
+                for keycodes, func in handler_for.handlers:
+                    if keycode in keycodes:
+                        func(self)
 
             # Get current time
             clock = time.time()
@@ -109,53 +149,6 @@ class GameApp(object):
             # Sleep a bit before next iteration
             time.sleep(0)
 
-    def handle_keypress(self, char):
-        """Key press handler."""
-
-        # TODO: rewrite this in a less ugly manner. Perhaps a handler
-        #       decorator?
-
-        if char == curses.KEY_RESIZE:
-            # Terminal was resized: reinitialize the views
-            self.init_views()
-
-        elif char in (ord("q"), 27):
-            # Q or Escape: end
-            self.quit = True
-
-        elif char == ord("r"):
-            # Q or Escape: end
-            self.game.reset()
-
-        elif char == ord(" "):
-            # Space bar: pause / unpause
-            self.paused = not self.paused
-
-        elif char == ord("\n") or char == curses.KEY_ENTER:
-            # Enter: advance turn, but only when paused
-            if self.paused:
-                self.game.next_generation()
-
-        elif char in (ord("+"), 465):
-            # +: increase speed
-            self.increase_speed()
-
-        elif char in (ord("-"), 464):
-            # -: decrease speed
-            self.decrease_speed()
-
-        elif char == curses.KEY_LEFT:
-            self.pos_x = (self.pos_x - 1) % self.game.width
-
-        elif char == curses.KEY_RIGHT:
-            self.pos_x = (self.pos_x + 1) % self.game.width
-
-        elif char == curses.KEY_UP:
-            self.pos_y = (self.pos_y - 1) % self.game.height
-
-        elif char == curses.KEY_DOWN:
-            self.pos_y = (self.pos_y + 1) % self.game.height
-
     def draw(self):
         """Draws the current state of the game."""
 
@@ -170,6 +163,24 @@ class GameApp(object):
         # Actually redraw the screen
         curses.doupdate()
 
+    @handler_for('q', KEY_ESC)
+    def quit(self):
+        self.quit = True
+
+    @handler_for('r')
+    def reset(self):
+        self.game.reset()
+
+    @handler_for(' ')
+    def pause_unpause(self):
+        self.paused = not self.paused
+
+    @handler_for('\n', curses.KEY_ENTER)
+    def next_generation(self):
+        if self.paused:
+            self.game.next_generation()
+
+    @handler_for('+', KEY_NUMPAD_PLUS)
     def increase_speed(self):
         """Increases game speed (if not paused)."""
         if not self.paused:
@@ -177,9 +188,26 @@ class GameApp(object):
             if self.speed > GameApp.MAX_SPEED:
                 self.speed = GameApp.MAX_SPEED
 
+    @handler_for('-', KEY_NUMPAD_MINUS)
     def decrease_speed(self):
         """Decreases game speed (if not paused)."""
         if not self.paused:
             self.speed /= 2.0
             if self.speed < GameApp.MIN_SPEED:
                 self.speed = GameApp.MIN_SPEED
+
+    @handler_for(curses.KEY_LEFT)
+    def move_left(self):
+        self.pos_x = (self.pos_x - 1) % self.game.width
+
+    @handler_for(curses.KEY_RIGHT)
+    def move_right(self):
+        self.pos_x = (self.pos_x + 1) % self.game.width
+
+    @handler_for(curses.KEY_UP)
+    def move_up(self):
+        self.pos_y = (self.pos_y - 1) % self.game.height
+
+    @handler_for(curses.KEY_DOWN)
+    def move_down(self):
+        self.pos_y = (self.pos_y + 1) % self.game.height

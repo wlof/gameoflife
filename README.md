@@ -5,9 +5,12 @@ This is a simple Python script implementing [Conway's Game of Life](https://en.w
 The game runs on a torus (the edges of the screen are connected). Size is set by the terminal.
 
 ### Usage
-Just run gameoflife.py. It should be compatible with both Python 2 and 3, and requires no additional libraries.
+For now, copy the gameoflife folder and run with the following command line:
+```
+python -c "import gameoflife; gameoflife.ui.main()
+```
 
-Except if you're running Windows, in which case you will have to install the unofficial curses library first. Download it from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses).
+It should be compatible with both Python 2 and 3, and requires no additional libraries, except if you're running Windows, in which case you will have to install the unofficial curses library first. Download it from [here](http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses).
 
 ### Manual
 During the game, you may use the following keys:

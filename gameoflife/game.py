@@ -41,18 +41,10 @@ class Game(object):
     def reset(self):
         """Resets the game."""
 
-        # Save pause state and pause during the reset
-        pause_state = self.paused
-        self.paused = True
-
-        # Resets grids
-        self.cells = CellGrid(self.world_width, self.world_height)
+        self.cells = CellGrid(self.width, self.height)
         self.cells.populate_random()
-        self.states = StateGrid(self.world_width, self.world_height)
+        self.states = StateGrid(self.width, self.height)
         self.generation = 1
-
-        # Restore pause state
-        self.paused = pause_state
 
     def next_generation(self):
         """Triggers the next generation of cells."""

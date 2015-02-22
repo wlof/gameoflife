@@ -30,12 +30,12 @@ from gameoflife.ui.exceptions import ResizeException
 
 
 def _raw_main(stdscr, args):
-    """Curses-wrapped actual main function."""
+    """curses-wrapped actual main function."""
 
     # Initialize the colour pairs used by the views.
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
-    # Set the cursor invisible
+    # Set the cursor to be invisible
     curses.curs_set(0)
 
     # Create the game object
@@ -43,7 +43,7 @@ def _raw_main(stdscr, args):
     height, width = stdscr.getmaxyx()
     game = Game(width, height)
 
-    # Create the game view and start the event loop
+    # Create the game app and start the event loop
     app = GameApp(game, stdscr)
     app.main()
 

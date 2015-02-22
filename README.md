@@ -1,18 +1,18 @@
 ## Game of Life
 
-This is a simple Python script implementing [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) using the curses library.
+This is a simple Python module implementing [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life), with a curses-based UI.
 
 The game runs on a torus (i.e. the edges of the screen are connected). Default size is 100x100.
 
 ### Installation
-Download the project files and install using:
+Download the module files and install using:
 ```
 python setup.py install
 ```
 
-If you want to use the slightly faster NumPy/SciPy implementation, you will of course have to install these libraries: http://www.scipy.org/scipylib/download.html
-
 If you're running Windows, you will have to install the unofficial curses library first. Download it from http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses.
+
+If you want to use the slightly faster NumPy/SciPy implementation, you will of course have to install these libraries: http://www.scipy.org/scipylib/download.html
 
 ### Usage
 After installation, run the game using:

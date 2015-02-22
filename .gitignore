@@ -42,5 +42,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Python compiled files
+# Project specific
 *.pyc
+gameoflife.bat

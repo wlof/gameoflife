@@ -30,8 +30,8 @@ from gameoflife.game import Game
 class GameNumpy(Game):
     """A numpy/scipy based implementation of the Game of Life."""
 
-    def __init__(self, width, height):
-        super(GameNumpy, self).__init__(width, height)
+    def __init__(self, width, height, prob):
+        super(GameNumpy, self).__init__(width, height, prob)
 
         # Weights used for the convolve operation
         self.weights = np.array([[1, 1,  1],
@@ -49,9 +49,8 @@ class GameNumpy(Game):
         """Populates the grid of cells at random, with specified
         probability.
         """
-        # FIXME: stop being a liar and use prob parameter
-        self.cells = np.random.random_integers(0, 1,
-                                               (self.width, self.height))
+        rand = np.random.uniform(0.0, 1.0, (self.width, self.height))
+        self.cells = np.int8(rand <= prob)
 
     def step(self):
         """Computes the next generation of cells based on the current one."""

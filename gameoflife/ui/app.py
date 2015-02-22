@@ -111,18 +111,22 @@ class GameApp(object):
     def main(self):
         """Event loop."""
 
-        # Clear the screen
-        self.screen.refresh()
+        # Reset the grid with initial population
+        self.reset()
 
         # Set non-blocking mode for keyboard events
         self.screen.nodelay(1)
         self.screen.timeout(0)
 
-        # Initialize internal clock
-        self._prev_clock = time.time()
+        # Clear the screen
+        self.screen.refresh()
 
         # First draw
         self.draw()
+
+        # Initialize internal clock
+        self._last_gen_time = time.time()
+        self._last_draw_time = time.time()
 
         while not self.quit:
             # Get key press, and pass it to handler.

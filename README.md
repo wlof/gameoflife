@@ -22,8 +22,8 @@ gameoflife
 
 There a few arguments you can use:
 ```
-usage: gameoflife [--numpy] [--width WIDTH] [--height HEIGHT] [--version]
-                  [--help]
+usage: gameoflife [--numpy] [--width WIDTH] [--height HEIGHT] [--prob PROB]
+                  [--version] [--help]
 
 Conway's Game of Life
 
@@ -33,6 +33,7 @@ optional arguments:
                         grid width
   --height HEIGHT, -h HEIGHT
                         grid height
+  --prob PROB, -p PROB  initial population probability
   --version             show program's version number and exit
   --help                show this help message and exit
 

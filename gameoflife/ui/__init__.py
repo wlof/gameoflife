@@ -45,7 +45,7 @@ def _curses_wrapped_main(stdscr, args):
         from gameoflife.gamepython import GamePython as Game
 
     # Create the game object
-    game = Game(args.width, args.height)
+    game = Game(args.width, args.height, args.prob)
 
     # Create the game app and start the event loop
     app = GameApp(game, stdscr)
@@ -68,6 +68,8 @@ def main():
                         help='grid width')
     parser.add_argument('--height', '-h', type=int, default=100,
                         help='grid height')
+    parser.add_argument('--prob', '-p', type=float, default=0.5,
+                        help='initial population probability')
 
     parser.add_argument('--version', action='version', version=__version__)
     parser.add_argument('--help', action='help',
@@ -95,5 +97,9 @@ def main():
         parser.error('width needs to be a positive integer')
     if args.height <= 0:
         parser.error('height needs to be a positive integer')
+
+    # Parse probability
+    if not 0.0 <= args.prob <= 1.0:
+        parser.error('probability needs to be between 0.0 and 1.0')
 
     curses.wrapper(_curses_wrapped_main, args)

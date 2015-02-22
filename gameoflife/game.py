@@ -23,14 +23,14 @@ from __future__ import (division, absolute_import, print_function,
 class Game(object):
     """Base class for the Game of Life."""
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, prob):
         """Creates a new instance of the Game of Life."""
         self.width, self.height = width, height
+        self.prob = prob
 
         self.generation = 1
 
         self.init_cells()
-        self.populate_random()
 
     def init_cells(self):
         """Initializes the grid of cells.
@@ -51,7 +51,7 @@ class Game(object):
         """Resets the game, i.e. repopulates it at random and goes back to
         generation 1.
         """
-        self.populate_random()
+        self.populate_random(self.prob)
         self.generation = 1
 
     def step(self):

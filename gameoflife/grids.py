@@ -60,9 +60,9 @@ class TorusGrid(object):
         self._rows[idx % len(self._rows)] = value
 
     def __str__(self):
-        s = "\n".join([" ".join([str(item) for item in row])
+        s = '\n'.join([' '.join([str(item) for item in row])
                        for row in self._rows])
-        return s + "\n"
+        return s + '\n'
 
 
 class CellGrid(TorusGrid):
@@ -78,7 +78,7 @@ class CellGrid(TorusGrid):
         super(CellGrid, self).__init__(width, height, False)
 
     def __str__(self):
-        s = '\n'.join([' '.join(['#' if item is True else '-' for item in row])
+        s = '\n'.join(['-'.join(['#' if item is True else '-' for item in row])
                        for row in self._rows])
         return s + '\n'
 
@@ -86,7 +86,7 @@ class CellGrid(TorusGrid):
         """Populates the grid at random, with specified probability."""
         for row in range(self.height):
             for col in range(self.width):
-                self[row][col] = True if random.random() < prob else False
+                self[row][col] = True if random.random() <= prob else False
 
     def neighbours(self, row, col):
         return [(x, y) for x in range(row - 1, row + 2)

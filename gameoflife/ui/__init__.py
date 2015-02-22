@@ -22,12 +22,15 @@ from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
 import curses
+import imp
+from argparse import ArgumentParser
 
+from gameoflife import __version__
 from gameoflife.ui.app import GameApp
 
 
-def _raw_main(stdscr, args):
-    """curses-wrapped actual main function."""
+def _curses_wrapped_main(stdscr, args):
+    """curses-wrapped main function."""
 
     # Initialize the colour pairs used by the views.
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -35,22 +38,57 @@ def _raw_main(stdscr, args):
     # Set the cursor to be invisible
     curses.curs_set(0)
 
-    # Create the game object
-    try:
+    # Load game implementation according to -n flag
+    if args.numpy:
         from gameoflife.gamenumpy import GameNumpy as Game
-    except ImportError:
+    else:
         from gameoflife.gamepython import GamePython as Game
 
-    game = Game(100, 100)
+    # Create the game object
+    game = Game(args.width, args.height)
 
     # Create the game app and start the event loop
     app = GameApp(game, stdscr)
     app.main()
 
 
-def main(args=None):
-    """Entry point for gameoflife. Includes top-level exception handlers that
-    print friendly error messages.
-    """
+def main():
+    """Entry point for gameoflife."""
 
-    curses.wrapper(_raw_main, args)
+    # Command line argument parser
+    parser = ArgumentParser(prog='gameoflife',
+                            description="Conway's Game of Life",
+                            epilog='Suggestions and bug reports are greatly appreciated: '
+                                   'https://github.com/wlof/gameoflife/issues', add_help=False)
+    parser.add_argument('--numpy', '-n', action='store_true',
+                        help='use the Numpy implementation')
+    parser.add_argument('--width', '-w', type=int, default=100,
+                        help='grid width')
+    parser.add_argument('--height', '-h', type=int, default=100,
+                        help='grid height')
+
+    parser.add_argument('--version', action='version', version=__version__)
+    parser.add_argument('--help', action='help', help='show this help message and exit')
+
+    # Parse args
+    args = parser.parse_args()
+
+    # Parse numpy flag
+    if args.numpy:
+        try:
+            imp.find_module('numpy')
+        except ImportError:
+            parser.error('numpy import failed. Check if numpy is installed correctly.')
+
+        try:
+            imp.find_module('scipy')
+        except ImportError:
+            parser.error('scipy import failed. Check if scipy is installed correctly.')
+
+    # Parse dimensions
+    if args.width <= 0:
+        parser.error('width needs to be a positive integer')
+    if args.height <= 0:
+        parser.error('height needs to be a positive integer')
+
+    curses.wrapper(_curses_wrapped_main, args)

@@ -109,6 +109,9 @@ class GameApp(object):
     def handle_keypress(self, char):
         """Key press handler."""
 
+        # TODO: rewrite this in a less ugly manner. Perhaps a handler
+        #       decorator?
+
         if char == curses.KEY_RESIZE:
             # Terminal was resized: reinitialize the views
             self.init_views()

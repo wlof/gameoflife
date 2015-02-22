@@ -83,17 +83,17 @@ class GameView(View):
         self.window.border()
 
         # Position
-        self.window.addstr(0, 2, " X = {} - Y = {} ".format(app.pos_x,
+        self.window.addstr(0, 2, ' X = {} - Y = {} '.format(app.pos_x,
                                                             app.pos_y))
 
         # Clock
-        self.window.addstr(0, self.width - 12, time.strftime(" %H:%M:%S "))
+        self.window.addstr(0, self.width - 12, time.strftime(' %H:%M:%S '))
 
         # Generation number
         self.window.addstr(self.height - 1, 2,
-                           " Generation: {} ".format(game.generation))
+                           ' Generation: {} '.format(game.generation))
 
         # Speed factor
-        speed_str = "{:2.1f}x".format(app.speed) if not app.paused else "---"
+        speed_str = '{:2.1f}x'.format(app.speed) if not app.paused else '---'
         self.window.addstr(self.height - 1, self.width - 15,
-                           " Speed: {} ".format(speed_str))
+                           ' Speed: {} '.format(speed_str))

@@ -58,8 +58,10 @@ def main():
     # Command line argument parser
     parser = ArgumentParser(prog='gameoflife',
                             description="Conway's Game of Life",
-                            epilog='Suggestions and bug reports are greatly appreciated: '
-                                   'https://github.com/wlof/gameoflife/issues', add_help=False)
+                            epilog='Suggestions and bug reports are greatly '
+                                   'appreciated: '
+                                   'https://github.com/wlof/gameoflife/issues',
+                            add_help=False)
     parser.add_argument('--numpy', '-n', action='store_true',
                         help='use the NumPy implementation')
     parser.add_argument('--width', '-w', type=int, default=100,
@@ -68,7 +70,8 @@ def main():
                         help='grid height')
 
     parser.add_argument('--version', action='version', version=__version__)
-    parser.add_argument('--help', action='help', help='show this help message and exit')
+    parser.add_argument('--help', action='help',
+                        help='show this help message and exit')
 
     # Parse args
     args = parser.parse_args()
@@ -78,12 +81,14 @@ def main():
         try:
             imp.find_module('numpy')
         except ImportError:
-            parser.error("can't find numpy module. Check if NumPy is installed correctly.")
+            parser.error("can't find numpy module. "
+                         "Check if NumPy is installed correctly.")
 
         try:
             imp.find_module('scipy')
         except ImportError:
-            parser.error("can't find scipy module. Check if SciPy is installed correctly.")
+            parser.error("can't find scipy module. "
+                         "Check if SciPy is installed correctly.")
 
     # Parse dimensions
     if args.width <= 0:

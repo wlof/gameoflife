@@ -3,9 +3,11 @@
 
 from setuptools import setup, find_packages
 
+from gameoflife import __version__
+
 
 setup(name='gameoflife',
-      version='0.3.1-dev',
+      version=__version__,
       license='MIT',
       description="Conway's Game of Life",
       long_description=open('README.md').read(),

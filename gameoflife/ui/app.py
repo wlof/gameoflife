@@ -46,7 +46,7 @@ class GameApp(object):
         self.quit = False
         self.speed = 1.0
 
-        self._prev_clock = time.clock()
+        self._prev_clock = time.time()
 
         self.view = GameView(self.screen)
 
@@ -58,7 +58,7 @@ class GameApp(object):
         self.screen.timeout(0)
 
         # Initialize internal clock
-        self._prev_clock = time.clock()
+        self._prev_clock = time.time()
 
         # First draw
         self.draw()
@@ -73,7 +73,7 @@ class GameApp(object):
             self.draw()
 
             # Is it time for a new generation?
-            clock = time.clock()
+            clock = time.time()
             if clock - self._prev_clock > 1.0 / self.speed:
                 if not self.paused:
                     self.game.next_generation()

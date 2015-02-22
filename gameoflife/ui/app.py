@@ -35,6 +35,8 @@ class GameApp(object):
     MIN_SPEED = 0.1   # minimum game speed factor
     MAX_SPEED = 16.0  # maximum game speed factor
 
+    SCREEN_DRAW_FREQ = 30.0  # frequency at which the screen is redrawn
+
     def __init__(self, game, stdscr):
         """Creates a new game application."""
 
@@ -46,7 +48,8 @@ class GameApp(object):
         self.speed = 1.0
         self.pos_x, self.pos_y = 0, 0
 
-        self._prev_clock = time.time()
+        self._last_draw_time = time.time()
+        self._last_refresh_time = time.time()
 
         self.init_views()
 
@@ -86,18 +89,22 @@ class GameApp(object):
             if char != -1:
                 self.handle_keypress(char)
 
-            # Draw the screen
-            self.draw()
+            # Get current time
+            clock = time.time()
 
             # Is it time for a new generation?
-            clock = time.time()
-            if clock - self._prev_clock > 1.0 / self.speed:
+            if clock - self._last_gen_time > 1.0 / self.speed:
                 if not self.paused:
                     self.game.next_generation()
-                self._prev_clock = clock
+                    self._last_gen_time = clock
+
+            # Is it time to redraw the screen?
+            if clock - self._last_draw_time > 1.0 / GameApp.SCREEN_DRAW_FREQ:
+                self.draw()
+                self._last_draw_time = clock
 
             # Sleep a bit before next iteration
-            time.sleep(0.01)
+            time.sleep(0)
 
     def handle_keypress(self, char):
         """Key press handler."""
@@ -144,9 +151,18 @@ class GameApp(object):
             self.pos_y = (self.pos_y + 1) % self.game.height
 
     def draw(self):
-        """Draw the current state of the game."""
+        """Draws the current state of the game."""
+
+        # Draw main window (border, speed, etc.)
         self.game_view.draw(self, self.game)
+        self.game_view.refresh(wait=True)
+
+        # Draw the view of the cells
         self.cells_view.draw(self.game, self.pos_x, self.pos_y)
+        self.cells_view.refresh(wait=True)
+
+        # Actually redraw the screen
+        curses.doupdate()
 
     def increase_speed(self):
         """Increases game speed (if not paused)."""

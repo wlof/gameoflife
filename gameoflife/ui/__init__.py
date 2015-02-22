@@ -14,7 +14,7 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-"""This module contains tne entry point for gameoflife's curses-based UI. To
+"""This module contains the entry point for gameoflife's curses-based UI. To
 invoke the UI, just call gameoflife.ui.main().
 """
 
@@ -23,7 +23,6 @@ from __future__ import (division, absolute_import, print_function,
 
 import curses
 
-from gameoflife.game import Game
 from gameoflife.ui.app import GameApp
 
 
@@ -37,6 +36,11 @@ def _raw_main(stdscr, args):
     curses.curs_set(0)
 
     # Create the game object
+    try:
+        from gameoflife.gamenumpy import GameNumpy as Game
+    except ImportError:
+        from gameoflife.gamepython import GamePython as Game
+
     game = Game(100, 100)
 
     # Create the game app and start the event loop

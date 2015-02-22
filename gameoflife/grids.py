@@ -14,7 +14,8 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-"""This module provides the classes for managing the cells and their states.
+"""This module provides the classes used by the pure Python implementation
+for managing the cells and their states.
 """
 
 from __future__ import (division, absolute_import, print_function,
@@ -81,27 +82,26 @@ class CellGrid(TorusGrid):
                        for row in self._rows])
         return s + '\n'
 
-    def populate_random(self, prob=0.1):
+    def populate_random(self, prob=0.5):
         """Populates the grid at random, with specified probability."""
         for row in range(self.height):
             for col in range(self.width):
                 self[row][col] = True if random.random() < prob else False
 
+    def neighbours(self, row, col):
+        return [(x, y) for x in range(row - 1, row + 2)
+                for y in range(col - 1, col + 2)
+                if (row, col) != (x, y)]
+
     def get_number_neighbours(self, row, col):
         """Returns the number of cells in the Moore neighbourhood of the
         specified location.
         """
-
-        # Could probably rewrite this more pythonically with a list
-        # comprehension, but needs splice support in CircularList first.
         number_neighours = 0
-        for i in range(row - 1, row + 2):
-            for j in range(col - 1, col + 2):
-                if (i, j) == (row, col):
-                    # Don't count the location itself
-                    continue
-                if self[i][j]:
-                    number_neighours += 1
+        for x, y in self.neighbours(row, col):
+            if self[x][y] is True:
+                number_neighours += 1
+
         return number_neighours
 
     def apply_states(self, states):

@@ -24,8 +24,6 @@ from __future__ import (division, absolute_import, print_function,
 import curses
 import time
 
-from gameoflife.grids import States
-
 
 class View(object):
     """A curses-based view."""
@@ -34,6 +32,15 @@ class View(object):
         """Creates a new view."""
         self.window = window
         self.height, self.width = window.getmaxyx()
+
+    def refresh(self, wait=False):
+        """Refreshes the view curses window. If wait is True, use noutrefresh
+        to delay the update, so that the screen can be updated all at once.
+        """
+        if wait:
+            self.window.noutrefresh()
+        else:
+            self.window.refresh()
 
 
 class CellsView(View):
@@ -46,15 +53,13 @@ class CellsView(View):
         """Draws the cells."""
         for row in range(self.height):
             for col in range(self.width):
-                # Pick the character according to the cell state (alive or
-                # dead)
-                if game.cells[row + pos_y][col + pos_x] is True:
+                if game.is_alive(row + pos_y, col + pos_x):
                     char = str(CellsView.CHAR_CELL_LIVE)
                 else:
                     char = str(CellsView.CHAR_CELL_DEAD)
 
                 # Cells born this generation are drawn in a different colour
-                if game.states[row + pos_y][col + pos_x] == States.Birth:
+                if game.is_new(row + pos_y, col + pos_x):
                     ink = curses.color_pair(1)
                 else:
                     ink = curses.color_pair(0)
@@ -67,8 +72,6 @@ class CellsView(View):
                     # of the window, causing curses to raise an error.
                     # Just ignore it.
                     pass
-
-        self.window.refresh()
 
 
 class GameView(View):
@@ -94,5 +97,3 @@ class GameView(View):
         speed_str = "{:2.1f}x".format(app.speed) if not app.paused else "---"
         self.window.addstr(self.height - 1, self.width - 15,
                            " Speed: {} ".format(speed_str))
-
-        self.window.refresh()

@@ -14,72 +14,51 @@
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-"""This module provides the base class for the Game of Life."""
+"""This module provides a class that implements the Game of Life in pure
+Python.
+"""
 
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
+from gameoflife.game import Game
+from gameoflife.grids import CellGrid, StateGrid, States
 
-class Game(object):
-    """Base class for the Game of Life."""
 
-    def __init__(self, width, height):
-        """Creates a new instance of the Game of Life."""
-        self.width, self.height = width, height
-
-        self.generation = 1
-
-        self.init_cells()
-        self.populate_random()
+class GamePython(Game):
+    """A pure Python implementation of the Game of Life."""
 
     def init_cells(self):
-        """Initializes the grid of cells.
-
-        Should be implemented by the derived class.
+        """Initializes the grid of cells, and its accompanying grid of
+        states.
         """
-        raise NotImplementedError
+        self.cells = CellGrid(self.width, self.height)
+        self.states = StateGrid(self.width, self.height)
 
     def populate_random(self, prob=0.5):
         """Populates the grid of cells at random, with specified
         probability.
-
-        Should be implemented by the derived class.
         """
-        raise NotImplementedError
-
-    def reset(self):
-        """Resets the game, i.e. repopulates it at random and goes back to
-        generation 1.
-        """
-        self.populate_random()
-        self.generation = 1
+        self.cells.populate_random(prob)
 
     def step(self):
-        """Computes the next generation of cells based on the current one.
+        """Computes the next generation of cells based on the current one."""
 
-        Should be implemented by the derived class.
-        """
-        raise NotImplementedError
+        # First, we compute the states according to the current generation of
+        # cells
+        self.states.compute(self.cells)
 
-    def next_generation(self):
-        """Triggers the next generation of cells, and increments
-        generation.
-        """
-        self.step()
-        self.generation += 1
+        # Then we apply the states to the cells to get the next generation
+        self.cells.apply_states(self.states)
 
     def is_alive(self, row, col):
         """Returns True if there is a live cell at the specified location,
         False if there isn't.
-
-        Should be implemented by the derived class.
         """
-        raise NotImplementedError
+        return self.cells[row][col] is True
 
     def is_new(self, row, col):
         """Returns True if there is a live cell that was born with the last
         generation at the specified location, False if there isn't.
-
-        Should be implemented by the derived class.
         """
-        raise NotImplementedError
+        return self.states[row][col] == States.Birth

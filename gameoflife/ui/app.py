@@ -133,11 +133,11 @@ class GameApp(object):
             if self.paused:
                 self.game.next_generation()
 
-        elif char == ord("+"):
+        elif char in (ord("+"), 465):
             # +: increase speed
             self.increase_speed()
 
-        elif char == ord("-"):
+        elif char in (ord("-"), 464):
             # -: decrease speed
             self.decrease_speed()
 

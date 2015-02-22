@@ -48,8 +48,8 @@ class GameApp(object):
         self.speed = 1.0
         self.pos_x, self.pos_y = 0, 0
 
+        self._last_gen_time = time.time()
         self._last_draw_time = time.time()
-        self._last_refresh_time = time.time()
 
         self.init_views()
 

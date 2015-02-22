@@ -72,6 +72,9 @@ class GameApp(object):
 
     def main(self):
         """Event loop."""
+        
+        # Clear the screen
+        self.screen.refresh()
 
         # Set non-blocking mode for keyboard events
         self.screen.nodelay(1)

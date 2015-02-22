@@ -22,11 +22,9 @@ from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
 import curses
-import sys
 
 from gameoflife.game import Game
 from gameoflife.ui.app import GameApp
-from gameoflife.ui.exceptions import ResizeException
 
 
 def _raw_main(stdscr, args):
@@ -39,9 +37,7 @@ def _raw_main(stdscr, args):
     curses.curs_set(0)
 
     # Create the game object
-    # For now, dimensions are deduced from terminal size
-    height, width = stdscr.getmaxyx()
-    game = Game(width, height)
+    game = Game(100, 100)
 
     # Create the game app and start the event loop
     app = GameApp(game, stdscr)
@@ -53,9 +49,4 @@ def main(args=None):
     print friendly error messages.
     """
 
-    try:
-        curses.wrapper(_raw_main, args)
-    except ResizeException:
-        print("Please do not resize the screen while game is running.",
-              file=sys.stderr)
-        sys.exit(1)
+    curses.wrapper(_raw_main, args)

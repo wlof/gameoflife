@@ -23,8 +23,7 @@ from __future__ import (division, absolute_import, print_function,
 import curses
 import time
 
-from gameoflife.ui.views import GameView
-from gameoflife.ui.exceptions import ResizeException
+from gameoflife.ui.views import GameView, CellsView
 
 
 class GameApp(object):
@@ -45,10 +44,28 @@ class GameApp(object):
         self.paused = False
         self.quit = False
         self.speed = 1.0
+        self.pos_x, self.pos_y = 0, 0
 
         self._prev_clock = time.time()
 
-        self.view = GameView(self.screen)
+        self.init_views()
+
+    def init_views(self):
+        """Initializes the game and cells views."""
+
+        # Create the game view
+        self.game_view = GameView(self.screen)
+
+        # The cells view dimensions are the main view dimensions minus 2, to
+        # leave room for the border
+        height, width = self.screen.getmaxyx()
+        cells_view_height, cells_view_width = height - 2, width - 2
+        cells_view_window = self.screen.derwin(cells_view_height,
+                                               cells_view_width,
+                                               1, 1)
+
+        # Create the cells view
+        self.cells_view = CellsView(cells_view_window)
 
     def main(self):
         """Event loop."""
@@ -86,9 +103,8 @@ class GameApp(object):
         """Key press handler."""
 
         if char == curses.KEY_RESIZE:
-            # Should probably handle this more gracefully, but in the
-            # meantime...
-            raise ResizeException
+            # Terminal was resized: reinitialize the views
+            self.init_views()
 
         elif char in (ord("q"), 27):
             # Q or Escape: end
@@ -115,9 +131,22 @@ class GameApp(object):
             # -: decrease speed
             self.decrease_speed()
 
+        elif char == curses.KEY_LEFT:
+            self.pos_x = (self.pos_x - 1) % self.game.width
+
+        elif char == curses.KEY_RIGHT:
+            self.pos_x = (self.pos_x + 1) % self.game.width
+
+        elif char == curses.KEY_UP:
+            self.pos_y = (self.pos_y - 1) % self.game.height
+
+        elif char == curses.KEY_DOWN:
+            self.pos_y = (self.pos_y + 1) % self.game.height
+
     def draw(self):
         """Draw the current state of the game."""
-        self.view.draw(self, self.game)
+        self.game_view.draw(self, self.game)
+        self.cells_view.draw(self.game, self.pos_x, self.pos_y)
 
     def increase_speed(self):
         """Increases game speed (if not paused)."""

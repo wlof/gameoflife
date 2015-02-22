@@ -42,19 +42,19 @@ class CellsView(View):
     CHAR_CELL_LIVE = '*'  # character used to draw live cells
     CHAR_CELL_DEAD = ' '  # character used to draw dead cells
 
-    def draw(self, game):
+    def draw(self, game, pos_x, pos_y):
         """Draws the cells."""
         for row in range(self.height):
             for col in range(self.width):
                 # Pick the character according to the cell state (alive or
                 # dead)
-                if game.cells[row][col] is True:
+                if game.cells[row + pos_y][col + pos_x] is True:
                     char = str(CellsView.CHAR_CELL_LIVE)
                 else:
                     char = str(CellsView.CHAR_CELL_DEAD)
 
                 # Cells born this generation are drawn in a different colour
-                if game.states[row][col] == States.Birth:
+                if game.states[row + pos_y][col + pos_x] == States.Birth:
                     ink = curses.color_pair(1)
                 else:
                     ink = curses.color_pair(0)
@@ -73,32 +73,15 @@ class CellsView(View):
 
 class GameView(View):
     """A curses-based view of the whole game."""
-
-    def __init__(self, window):
-        """Creates a new view."""
-        super(GameView, self).__init__(window)
-        self.init_cells_view()
-
-    def init_cells_view(self):
-        """Initializes the cells subview."""
-        # The cells view dimensions are the main view dimensions minus 2, to
-        # leave room for the border
-        cells_view_height, cells_view_width = self.height - 2, self.width - 2
-        cells_view_window = self.window.derwin(cells_view_height,
-                                               cells_view_width,
-                                               1, 1)
-
-        # Create the cells view
-        self.cells_view = CellsView(cells_view_window)
-
     def draw(self, app, game):
         """Draws the current state of the game."""
 
         # Window border
         self.window.border()
 
-        # Title
-        self.window.addstr(0, 10, " GAME OF LIFE ")
+        # Position
+        self.window.addstr(0, 2, " X = {} - Y = {} ".format(app.pos_x,
+                                                            app.pos_y))
 
         # Clock
         self.window.addstr(0, self.width - 12, time.strftime(" %H:%M:%S "))
@@ -111,8 +94,5 @@ class GameView(View):
         speed_str = "{:2.1f}x".format(app.speed) if not app.paused else "---"
         self.window.addstr(self.height - 1, self.width - 15,
                            " Speed: {} ".format(speed_str))
-
-        # Draw the cells
-        self.cells_view.draw(game)
 
         self.window.refresh()

@@ -46,17 +46,18 @@ class View(object):
 class CellsView(View):
     """A curses-based view of the grid of cells."""
 
-    CHAR_CELL_LIVE = '*'  # character used to draw live cells
-    CHAR_CELL_DEAD = ' '  # character used to draw dead cells
+    # These are cast to str because curses doesn't like Unicode
+    CHAR_CELL_LIVE = str('*')  # character used to draw live cells
+    CHAR_CELL_DEAD = str(' ')  # character used to draw dead cells
 
     def draw(self, game, pos_x, pos_y):
         """Draws the cells."""
         for row in range(self.height):
             for col in range(self.width):
                 if game.is_alive(row + pos_y, col + pos_x):
-                    char = str(CellsView.CHAR_CELL_LIVE)
+                    char = CellsView.CHAR_CELL_LIVE
                 else:
-                    char = str(CellsView.CHAR_CELL_DEAD)
+                    char = CellsView.CHAR_CELL_DEAD
 
                 # Cells born this generation are drawn in a different colour
                 if game.is_new(row + pos_y, col + pos_x):

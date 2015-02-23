@@ -15,7 +15,7 @@
 # included in all copies or substantial portions of the Software.
 
 """This module provides a class that implements the Game of Life using
-the numpy and scipy libraries.
+the NumPy and SciPy libraries.
 """
 
 from __future__ import (division, absolute_import, print_function,

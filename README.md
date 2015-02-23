@@ -4,6 +4,8 @@ This is a simple Python module implementing [Conway's Game of Life](https://en.w
 
 The game runs on a torus (i.e. the edges of the screen are connected). Default size is 100x100.
 
+![Game of Life](https://i.imgur.com/nkn2XLz.gif)
+
 ### Installation
 Download the module files and install using:
 ```

@@ -33,6 +33,7 @@ def _curses_wrapped_main(stdscr, args):
     """curses-wrapped main function."""
 
     # Initialize the colour pairs used by the views.
+    # TODO: use curses.has_colors()
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
     # Set the cursor to be invisible

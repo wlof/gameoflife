@@ -12,7 +12,7 @@ Download the module files and install using:
 python setup.py install
 ```
 
-If you're running Windows, you will have to install the unofficial curses library first. Download it from http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses.
+If you're running Windows, you will need to install the unofficial curses library. Download it from http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses.
 
 If you want to use the slightly faster NumPy/SciPy implementation, you will of course have to install these libraries: http://www.scipy.org/scipylib/download.html
 

@@ -36,7 +36,11 @@ def _curses_wrapped_main(stdscr, args):
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
     # Set the cursor to be invisible
-    curses.curs_set(0)
+    try:
+        curses.curs_set(0)
+    except curses.error:
+        # Will fail on some platforms. No biggie.
+        pass
 
     # Load game implementation according to -n flag
     if args.numpy:

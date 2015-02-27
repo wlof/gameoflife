@@ -61,7 +61,7 @@ class GameNumpy(Game):
         # Here's the trick: we assigned 10 to the central position in the
         # weights matrix. So every entry in the convolved matrix will have
         # values 0-8 for dead cells and 10-18 for live cells, depending on
-        # the number of neighbours.
+        # the number of neighbors.
         # The new cells matrix will have a cell for the following values in
         # the convolved matrix:
         # - 3: birth of a new cell

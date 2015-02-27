@@ -88,21 +88,21 @@ class CellGrid(TorusGrid):
             for col in range(self.width):
                 self[row][col] = True if random.random() <= prob else False
 
-    def neighbours(self, row, col):
+    def neighbors(self, row, col):
         return [(x, y) for x in range(row - 1, row + 2)
                 for y in range(col - 1, col + 2)
                 if (row, col) != (x, y)]
 
-    def get_number_neighbours(self, row, col):
-        """Returns the number of cells in the Moore neighbourhood of the
+    def get_number_neighbors(self, row, col):
+        """Returns the number of cells in the Moore neighborhood of the
         specified location.
         """
-        number_neighours = 0
-        for x, y in self.neighbours(row, col):
+        number_neighbors = 0
+        for x, y in self.neighbors(row, col):
             if self[x][y] is True:
-                number_neighours += 1
+                number_neighbors += 1
 
-        return number_neighours
+        return number_neighbors
 
     def apply_states(self, states):
         """Kills and spawns cells according to the grid of states."""
@@ -124,9 +124,9 @@ class States:
 class StateGrid(TorusGrid):
     """Grid of states."""
 
-    N_B = 3      # Number of neighbours needed for a cell to be born
-    N_S_MIN = 2  # Minimum number of neighbours needed for a cell to stay alive
-    N_S_MAX = 3  # Maximum number of neighbours needed for a cell to stay alive
+    N_B = 3      # Number of neighbors needed for a cell to be born
+    N_S_MIN = 2  # Minimum number of neighbors needed for a cell to stay alive
+    N_S_MAX = 3  # Maximum number of neighbors needed for a cell to stay alive
 
     def __init__(self, width, height):
         """Creates a grid of states."""
@@ -141,17 +141,17 @@ class StateGrid(TorusGrid):
         """Computes new states according to the grid of cells."""
         for row in range(self.height):
             for col in range(self.width):
-                number_neighours = cells.get_number_neighbours(row, col)
+                number_neighbors = cells.get_number_neighbors(row, col)
 
                 if cells[row][col] is True:
-                    if number_neighours < StateGrid.N_S_MIN:
+                    if number_neighbors < StateGrid.N_S_MIN:
                         self[row][col] = States.DeathByIsolation
-                    elif number_neighours > StateGrid.N_S_MAX:
+                    elif number_neighbors > StateGrid.N_S_MAX:
                         self[row][col] = States.DeathByOverpopulation
                     else:
                         self[row][col] = States.NoChange
                 else:
-                    if number_neighours == StateGrid.N_B:
+                    if number_neighbors == StateGrid.N_B:
                         self[row][col] = States.Birth
                     else:
                         self[row][col] = States.NoChange

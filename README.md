@@ -7,9 +7,11 @@ The game runs on a torus (i.e. the edges of the screen are connected). Default s
 ![Game of Life](https://i.imgur.com/nkn2XLz.gif)
 
 ### Installation
-Download the module files and install using:
+From GitHub:
 ```
-python setup.py install
+$ git clone https://github.com/wlof/gameoflife
+$ cd gameoflife
+$ sudo python setup.py install
 ```
 
 If you're running Windows, you will need to install the unofficial curses library. Download it from http://www.lfd.uci.edu/~gohlke/pythonlibs/#curses.

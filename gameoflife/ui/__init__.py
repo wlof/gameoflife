@@ -26,34 +26,58 @@ import imp
 from argparse import ArgumentParser
 
 from gameoflife import __version__
-from gameoflife.ui.app import GameApp
+from gameoflife.ui.app import CursesApp
 
 
-def _curses_wrapped_main(stdscr, args):
+def init_colors():
+    """Initializes curses colors."""
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_WHITE, -1)
+    curses.init_pair(2, curses.COLOR_RED, -1)
+    curses.init_pair(3, curses.COLOR_YELLOW, -1)
+    curses.init_pair(4, curses.COLOR_GREEN, -1)
+    curses.init_pair(5, curses.COLOR_BLUE, -1)
+    curses.init_pair(6, curses.COLOR_CYAN, -1)
+    curses.init_pair(7, curses.COLOR_MAGENTA, -1)
+
+
+def curses_wrapped_main(stdscr, args):
     """curses-wrapped main function."""
 
-    # Initialize the colour pairs used by the views.
-    # TODO: use curses.has_colors()
-    curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    # Set up screen
+    curses.noecho()
+    curses.cbreak()
+    curses.curs_set(0)
 
-    # Set the cursor to be invisible
-    try:
-        curses.curs_set(0)
-    except curses.error:
-        # Will fail on some platforms. No biggie.
-        pass
+    # Set up colors if needed
+    if args.color == 'auto':
+        color = curses.has_colors()
+    elif args.color == 'yes':
+        color = True
+    else:
+        color = False
+
+    if color:
+        init_colors()
 
     # Load game implementation according to -n flag
-    if args.numpy:
-        from gameoflife.gamenumpy import GameNumpy as Game
-    else:
-        from gameoflife.gamepython import GamePython as Game
+    if args.impl == 'normal':
+        from gameoflife.gamepython import GamePython as GameOfLife
+    elif args.impl == 'light':
+        from gameoflife.gamepython import GamePythonLight as GameOfLife
+    elif args.impl == 'numpy':
+        from gameoflife.gamenumpy import GameNumPy as GameOfLife
+    elif args.impl == 'numpy-light':
+        from gameoflife.gamenumpy import GameNumPyLight as GameOfLife
 
     # Create the game object
-    game = Game(args.width, args.height, args.prob)
+    game = GameOfLife(args.width, args.height)
 
     # Create the game app and start the event loop
-    app = GameApp(game, stdscr)
+    app_params = {'prob': args.prob,
+                  'color': color}
+    app = CursesApp(game, app_params, stdscr)
     app.main()
 
 
@@ -67,14 +91,19 @@ def main():
                                    'appreciated: '
                                    'https://github.com/wlof/gameoflife/issues',
                             add_help=False)
-    parser.add_argument('--numpy', '-n', action='store_true',
-                        help='use the NumPy implementation')
+    parser.add_argument('--impl', '-i', type=str, default='normal',
+                        choices=map(str, ['normal', 'light',
+                                          'numpy', 'numpy-light']),
+                        help='game implementation')
     parser.add_argument('--width', '-w', type=int, default=100,
                         help='grid width')
     parser.add_argument('--height', '-h', type=int, default=100,
                         help='grid height')
     parser.add_argument('--prob', '-p', type=float, default=0.5,
                         help='initial population probability')
+    parser.add_argument('--color', '-c', type=str, default='auto',
+                        choices=['auto', 'yes', 'no'],
+                        help='use colors')
 
     parser.add_argument('--version', action='version', version=__version__)
     parser.add_argument('--help', action='help',
@@ -84,7 +113,7 @@ def main():
     args = parser.parse_args()
 
     # Parse numpy flag
-    if args.numpy:
+    if args.impl in ('numpy', 'numpy-light'):
         try:
             imp.find_module('numpy')
         except ImportError:
@@ -107,4 +136,4 @@ def main():
     if not 0.0 <= args.prob <= 1.0:
         parser.error('probability needs to be between 0.0 and 1.0')
 
-    curses.wrapper(_curses_wrapped_main, args)
+    curses.wrapper(curses_wrapped_main, args)

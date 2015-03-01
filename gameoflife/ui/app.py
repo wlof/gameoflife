@@ -63,7 +63,7 @@ class handler_for(object):
                             '{} found'.format(type(key)))
 
 
-class GameApp(object):
+class CursesApp(object):
     """Main game application.
 
     Manages the views, handles user input, passes time.
@@ -74,10 +74,11 @@ class GameApp(object):
 
     SCREEN_DRAW_FREQ = 30.0  # frequency at which the screen is redrawn
 
-    def __init__(self, game, stdscr):
+    def __init__(self, game, params, stdscr):
         """Creates a new game application."""
 
         self.game = game
+        self.params = params
         self.screen = stdscr
 
         self.paused = False
@@ -146,7 +147,7 @@ class GameApp(object):
                     self._last_gen_time = clock
 
             # Is it time to redraw the screen?
-            if clock - self._last_draw_time > 1.0 / GameApp.SCREEN_DRAW_FREQ:
+            if clock - self._last_draw_time > 1.0 / self.SCREEN_DRAW_FREQ:
                 self.draw()
                 self._last_draw_time = clock
 
@@ -161,7 +162,8 @@ class GameApp(object):
         self.game_view.refresh(wait=True)
 
         # Draw the view of the cells
-        self.cells_view.draw(self.game, self.pos_x, self.pos_y)
+        self.cells_view.draw(self.game, self.pos_x, self.pos_y,
+                             self.params['color'])
         self.cells_view.refresh(wait=True)
 
         # Actually redraw the screen
@@ -174,6 +176,7 @@ class GameApp(object):
     @handler_for('r')
     def reset(self):
         self.game.reset()
+        self.game.populate_random(self.params['prob'])
 
     @handler_for(' ')
     def pause_unpause(self):
@@ -189,16 +192,16 @@ class GameApp(object):
         """Increases game speed (if not paused)."""
         if not self.paused:
             self.speed *= 2.0
-            if self.speed > GameApp.MAX_SPEED:
-                self.speed = GameApp.MAX_SPEED
+            if self.speed > self.MAX_SPEED:
+                self.speed = self.MAX_SPEED
 
     @handler_for('-', KEY_NUMPAD_MINUS)
     def decrease_speed(self):
         """Decreases game speed (if not paused)."""
         if not self.paused:
             self.speed /= 2.0
-            if self.speed < GameApp.MIN_SPEED:
-                self.speed = GameApp.MIN_SPEED
+            if self.speed < self.MIN_SPEED:
+                self.speed = self.MIN_SPEED
 
     @handler_for(curses.KEY_LEFT)
     def move_left(self):

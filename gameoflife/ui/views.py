@@ -21,6 +21,8 @@ interface.
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
+from gameoflife.gameoflife import Fate
+
 import curses
 import time
 
@@ -47,23 +49,38 @@ class CellsView(View):
     """A curses-based view of the grid of cells."""
 
     # These are cast to str because curses doesn't like Unicode
-    CHAR_CELL_LIVE = str('*')  # character used to draw live cells
-    CHAR_CELL_DEAD = str(' ')  # character used to draw dead cells
+    MAP_FATES_CHARS = {Fate.StayDead: str(' '),
+                       Fate.Birth: str(' '),
+                       Fate.Survive: str('o'),
+                       Fate.DeathByIsolation: str('*'),
+                       Fate.DeathByOvercrowding: str('O')}
 
-    def draw(self, game, pos_x, pos_y):
+    def ink(self, age):
+        """Returns the color to use according to how old the cell is."""
+        if age == 0:
+            ink = curses.color_pair(3) | curses.A_BOLD
+        elif age == 1:
+            ink = curses.color_pair(4) | curses.A_BOLD
+        elif age < 5:
+            ink = curses.color_pair(6) | curses.A_BOLD
+        else:
+            ink = curses.color_pair(1) | curses.A_BOLD
+        return ink
+
+    def draw(self, game, pos_x, pos_y, color):
         """Draws the cells."""
         for row in range(self.height):
             for col in range(self.width):
-                if game.is_alive(row + pos_y, col + pos_x):
-                    char = CellsView.CHAR_CELL_LIVE
-                else:
-                    char = CellsView.CHAR_CELL_DEAD
+                # Choose char according to fate
+                fate = game.fate(row + pos_y, col + pos_x)
+                char = self.MAP_FATES_CHARS[fate]
 
-                # Cells born this generation are drawn in a different colour
-                if game.is_new(row + pos_y, col + pos_x):
-                    ink = curses.color_pair(1)
+                # Choose ink according to age
+                if color:
+                    age = game.age(row + pos_y, col + pos_x)
+                    ink = self.ink(age)
                 else:
-                    ink = curses.color_pair(0)
+                    ink = 0
 
                 # Draw the cell
                 try:
@@ -77,6 +94,7 @@ class CellsView(View):
 
 class GameView(View):
     """A curses-based view of the whole game."""
+
     def draw(self, app, game):
         """Draws the current state of the game."""
 

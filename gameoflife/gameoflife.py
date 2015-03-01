@@ -20,24 +20,37 @@ from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
 
-class Game(object):
+class Fate(object):
+    """Enumeration of the possible fates of a cell.
+
+    If the cell is currently dead, it can either stay dead, or be born.
+    If the cell is currently alive, it can survive, die by isolation, or
+    die by overcrowding.
+    """
+    StayDead, Birth, Survive, DeathByIsolation, DeathByOvercrowding = range(5)
+
+
+class GameOfLife(object):
     """Base class for the Game of Life."""
 
-    def __init__(self, width, height, prob):
+    def __init__(self, width, height):
         """Creates a new instance of the Game of Life."""
         self.width, self.height = width, height
-        self.prob = prob
-
         self.generation = 1
+        self._init()
 
-        self.init_cells()
-
-    def init_cells(self):
-        """Initializes the grid of cells.
+    def _init(self):
+        """Initializes whatever internal structures used by the implementation
+        to represent cells and compute generations.
 
         Should be implemented by the derived class.
         """
         raise NotImplementedError
+
+    def reset(self):
+        """Resets the game."""
+        self.generation = 1
+        self._init()
 
     def populate_random(self, prob=0.5):
         """Populates the grid of cells at random, with specified
@@ -47,38 +60,30 @@ class Game(object):
         """
         raise NotImplementedError
 
-    def reset(self):
-        """Resets the game, i.e. repopulates it at random and goes back to
-        generation 1.
+    def next_generation(self):
+        """Triggers the next generation of cells, and increments
+        generation.
         """
-        self.populate_random(self.prob)
-        self.generation = 1
+        self._step()
+        self.generation += 1
 
-    def step(self):
+    def _step(self):
         """Computes the next generation of cells based on the current one.
 
         Should be implemented by the derived class.
         """
         raise NotImplementedError
 
-    def next_generation(self):
-        """Triggers the next generation of cells, and increments
-        generation.
-        """
-        self.step()
-        self.generation += 1
-
-    def is_alive(self, row, col):
-        """Returns True if there is a live cell at the specified location,
-        False if there isn't.
+    def fate(self, row, col):
+        """Returns the fate of the cell at the specified location.
 
         Should be implemented by the derived class.
         """
         raise NotImplementedError
 
-    def is_new(self, row, col):
-        """Returns True if there is a live cell that was born with the last
-        generation at the specified location, False if there isn't.
+    def age(self, row, col):
+        """Returns the age of a cell, i.e. how many generations it's been in
+        its current state (dead or alive).
 
         Should be implemented by the derived class.
         """

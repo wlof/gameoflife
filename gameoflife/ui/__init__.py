@@ -92,8 +92,8 @@ def main():
                                    'https://github.com/wlof/gameoflife/issues',
                             add_help=False)
     parser.add_argument('--impl', '-i', type=str, default='normal',
-                        choices=map(str, ['normal', 'light',
-                                          'numpy', 'numpy-light']),
+                        choices=['normal', 'light',
+                                 'numpy', 'numpy-light'],
                         help='game implementation')
     parser.add_argument('--width', '-w', type=int, default=100,
                         help='grid width')

@@ -86,9 +86,10 @@ class BaseGamePython(GameOfLife):
         """Returns the coordinates for the neighbors of the specified
         location.
         """
-        return [(x, y) for x in range(row - 1, row + 2)
-                for y in range(col - 1, col + 2)
-                if (row, col) != (x, y)]
+        for x in range(row - 1, row + 2):
+            for y in range(col - 1, col + 2):
+                if (row, col) != (x, y):
+                    yield (x, y)
 
     def get_number_neighbors(self, row, col):
         """Returns the number of live cells in the Moore neighborhood on the
